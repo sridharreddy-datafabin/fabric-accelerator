@@ -256,6 +256,59 @@
         }
       },
       {
+        "name": "Update High Watermark",
+        "type": "SqlServerStoredProcedure",
+        "dependsOn": [
+          {
+            "activity": "ForEach Level 2 Config",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureOutput": false,
+          "secureInput": false
+        },
+        "typeProperties": {
+          "storedProcedureName": "[ELT].[UpdateIngestDefinition]",
+          "database": "controlDB-78d6902e-70ea-4fb0-b51e-af3f2aaee3b7",
+          "storedProcedureParameters": {
+            "IngestID": {
+              "value": {
+                "value": "@pipeline().parameters.IngestID",
+                "type": "Expression"
+              },
+              "type": "Int32"
+            },
+            "IngestStatus": {
+              "value": "Success",
+              "type": "String"
+            },
+            "LastDeltaDate": {
+              "value": {
+                "value": "@activity('Get High Watermark').output.firstRow.DataToTimestamp",
+                "type": "Expression"
+              },
+              "type": "DateTime"
+            },
+            "ReloadFlag": {
+              "value": {
+                "value": "@pipeline().parameters.ReloadFlag",
+                "type": "Expression"
+              },
+              "type": "Boolean"
+            }
+          }
+        },
+        "externalReferences": {
+          "connection": "78e8d795-a55c-412e-9b76-47ba404b4d51"
+        }
+      },
+      {
         "name": "Get Level 1 Transform Config",
         "type": "Lookup",
         "dependsOn": [
@@ -818,59 +871,6 @@
               }
             }
           ]
-        }
-      },
-      {
-        "name": "Update High Watermark",
-        "type": "SqlServerStoredProcedure",
-        "dependsOn": [
-          {
-            "activity": "ForEach Level 2 Config",
-            "dependencyConditions": [
-              "Succeeded"
-            ]
-          }
-        ],
-        "policy": {
-          "timeout": "0.12:00:00",
-          "retry": 0,
-          "retryIntervalInSeconds": 30,
-          "secureOutput": false,
-          "secureInput": false
-        },
-        "typeProperties": {
-          "storedProcedureName": "[ELT].[UpdateIngestDefinition]",
-          "database": "controlDB-78d6902e-70ea-4fb0-b51e-af3f2aaee3b7",
-          "storedProcedureParameters": {
-            "IngestID": {
-              "value": {
-                "value": "@pipeline().parameters.IngestID",
-                "type": "Expression"
-              },
-              "type": "Int32"
-            },
-            "IngestStatus": {
-              "value": "Success",
-              "type": "String"
-            },
-            "LastDeltaDate": {
-              "value": {
-                "value": "@activity('Get High Watermark').output.firstRow.DataToTimestamp",
-                "type": "Expression"
-              },
-              "type": "DateTime"
-            },
-            "ReloadFlag": {
-              "value": {
-                "value": "@pipeline().parameters.ReloadFlag",
-                "type": "Expression"
-              },
-              "type": "Boolean"
-            }
-          }
-        },
-        "externalReferences": {
-          "connection": "78e8d795-a55c-412e-9b76-47ba404b4d51"
         }
       }
     ],

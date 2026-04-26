@@ -268,7 +268,7 @@
         "type": "ExecutePipeline",
         "typeProperties": {
           "pipeline": {
-            "referenceName": "d5ccf002-8789-4809-ab76-af1ef4f2129c",
+            "referenceName": "29ca711a-e20f-457c-a619-35b0310193ad",
             "type": "PipelineReference"
           },
           "parameters": {
@@ -304,8 +304,6 @@
           "secureInput": false
         },
         "name": "Level 2 Transform GOLD",
-        "state": "Inactive",
-        "onInactiveMarkAs": "Succeeded",
         "dependsOn": [
           {
             "activity": "Level 1 Transform SILVER",
