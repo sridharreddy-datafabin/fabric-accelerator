@@ -91,7 +91,16 @@ jobs:
               fab create $WORKSPACE_NAME.Workspace -P capacityName=$FABRIC_CAPACITY_NAME
               fab acl set $WORKSPACE_NAME.Workspace -I $WORKSPACE_ADMIN_ID -R admin -f
             fi 
-
+        # Enable workspace Identity and grant contributor role
+        - name: Enable workspace identity and grant contributor role
+          run: |
+            WorkspaceIdentityExists=$(fab exists $WORKSPACE_NAME.Workspace/.managedidentities/$WORKSPACE_NAME.ManagedIdentity | tr -d '[:space:]')
+            if [ "$WorkspaceIdentityExists" != "*true" ]; then
+              fab create $WORKSPACE_NAME.Workspace/.managedidentities/$WORKSPACE_NAME.ManagedIdentity
+              workspaceIdentity=$(fab acl get ${WORKSPACE_NAME}.Workspace -q "[?principal.displayName=='${WORKSPACE_NAME}'].principal.servicePrincipalDetails.aadAppId | [0]" | tr -d '\r\n')
+              fab acl set $WORKSPACE_NAME.Workspace -I $workspaceIdentity -R contributor -f
+            fi
+          
         # Delete Eventstream if it exists (TEMP WORKAROUND for issue with existing Eventstream during redeployments)
         - name: Delete Eventstream if it exists
           run: |
