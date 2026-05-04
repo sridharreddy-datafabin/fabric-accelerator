@@ -336,7 +336,7 @@ jobs:
         # Deploy WWI-mirror Database
         - name: Deploy WWI-mirror Database
           run: |
-            set +x
+            set -euo pipefail
             MirrorDBExists=$(fab exists $WORKSPACE_NAME.Workspace/WWI-mirror.MirroredDatabase | tr -d '[:space:]')
           
             if [ "$MirrorDBExists" != "*true" ]; then
@@ -374,12 +374,19 @@ jobs:
             done
             echo "Mirroring status is now: $status"
 
-            # Start Mirorring
-              response=$(fab api -X post "workspaces/$NEW_FABRIC_WORKSPACE_ID/mirroredDatabases/$NEW_WWI_MIRROR_DB_ID/startMirroring" --show_headers)
-              echo "$response"
-              status_code=$(echo "$response" | jq -r '.status_code')
-              
-              set -x
+            # Start Mirroring
+            echo "Starting WWI-mirror..."
+            response=$(fab api -X post "workspaces/$NEW_FABRIC_WORKSPACE_ID/mirroredDatabases/$NEW_WWI_MIRROR_DB_ID/startMirroring" --show_headers)
+            echo "$response"
+            status_code=$(echo "$response" | jq -r '.status_code')
+
+            if [ "$status_code" = "200" ]; then
+              echo "WWI-mirror Database mirroring started successfully."
+            else
+              echo "Starting mirroring for WWI-mirror Database failed with status code: $status_code">&2
+              exit 1
+            fi
+
       # Deploy Pipeline wwi-elt-framework
         - name: Deploy Pipeline wwi-elt-framework
           run: |
