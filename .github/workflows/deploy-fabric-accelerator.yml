@@ -367,7 +367,7 @@ jobs:
             while :; do
               response=$(fab api -X post "workspaces/$NEW_FABRIC_WORKSPACE_ID/mirroredDatabases/$NEW_WWI_MIRROR_DB_ID/getMirroringStatus" --show_headers)
               echo "$response"
-              status=$(echo "$response" | jq -r '.status')
+              status=$(echo "$response" | jq -r '.text.status')
               echo "Mirroring status: $status"
               [ "$status" != "Initializing" ] && break
               sleep 30
