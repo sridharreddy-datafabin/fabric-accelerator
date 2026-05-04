@@ -338,7 +338,7 @@ jobs:
            MirrorDBExists=$(fab exists $WORKSPACE_NAME.Workspace/WWI-mirror.MirroredDatabase | tr -d '[:space:]')
         
            if [ "$MirrorDBExists" != "*true" ]; then
-              mirroring=$(jq '.' "${GITHUB_WORKSPACE}/workspace/mirror/wwi-mirror.MirroredDatabase/mirroring.json" | base64)
+              mirroring=$(jq '.' "${GITHUB_WORKSPACE}/workspace/mirror/WideWorldImporters-mirror.MirroredDatabase/mirroring.json" | base64)
               folderId=$(fab get $WORKSPACE_NAME.Workspace/mirror.Folder -q id | tr -d '\r')
               jsonPayload=$(jq -n \
                         --arg displayName "WWI-mirror" \
