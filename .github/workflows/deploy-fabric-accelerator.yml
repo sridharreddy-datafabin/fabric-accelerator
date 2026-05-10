@@ -1103,17 +1103,21 @@ jobs:
     needs: deploy-fabric-accelerator
     steps: 
       # Checkout code
-        - uses: actions/checkout@v6          
+        - uses: actions/checkout@v6     
+        
+        - name: Azure Login
+          uses: Azure/login@v1
+          with:
+              creds: '{"clientId":"${{ secrets.ACTION_SPN_CLIENTID }}","clientSecret":"${{ secrets.ACTION_SPN_SECRET }}","subscriptionId":"${{ secrets.SUBSCRIPTION_ID }}","tenantId":"${{ secrets.TENANT_ID }}"}'
 
-      # Install latest version of SqlPackage to deploy Gold DW
-        - name: Install SqlPackage
-          run: |
-            dotnet tool update -g microsoft.sqlpackage
+        # Ensure MSBuild is available on PATH
+        - name: Add msbuild to PATH
+          uses: microsoft/setup-msbuild@v3  
 
-      # Build Gold DW Dacpac from project file
-        - name: Build Gold DW Dacpac
+        # Build the SQL project into a .dacpac using MSBuild (SSDT)
+        - name: Build Gold DW dacpac
+          shell: pwsh
           run: |
-           dotnet build "${{ github.workspace }}\workspace\warehouse\dw_gold.Warehouse\dw_gold.sqlproj"
-           $dacpac = "$env:GITHUB_WORKSPACE\workspace\warehouse\dw_gold.Warehouse\bin\Release\dw_gold.dacpac"
-            Write-Host "Expected DACPAC path: $dacpac"
-            Write-Host "Exists: $(Test-Path $dacpac)"
+            msbuild "${{ github.workspace }}\elt-framework\ControlDB\ControlDB.sqlproj" `
+              /p:Configuration=Release `
+              /p:Platform="Any CPU"
