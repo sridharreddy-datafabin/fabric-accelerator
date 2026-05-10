@@ -1114,5 +1114,6 @@ jobs:
         - name: Build Gold DW Dacpac
           run: |
            dotnet build "${{ github.workspace }}\workspace\warehouse\dw_gold.Warehouse\dw_gold.sqlproj"
-           
-       
+           $dacpac = "$env:GITHUB_WORKSPACE\workspace\warehouse\dw_gold.Warehouse\bin\Release\dw_gold.dacpac"
+            Write-Host "Expected DACPAC path: $dacpac"
+            Write-Host "Exists: $(Test-Path $dacpac)"
