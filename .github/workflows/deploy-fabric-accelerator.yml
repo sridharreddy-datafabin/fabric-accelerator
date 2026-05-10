@@ -1145,17 +1145,23 @@ jobs:
             fab auth login -u "${{ secrets.ACTION_SPN_CLIENTID }}" -p "${{ secrets.ACTION_SPN_SECRET }}" --tenant "${{ secrets.TENANT_ID }}"
 
             $resourcePath = "${{ env.WORKSPACE_NAME }}.Workspace/${{ env.GOLD_DW }}.Warehouse"
-            $env:DW_SERVER = (fab get "$resourcePath" -q properties.connectionString).Trim()
-            $env:DW_NAME = "${{ env.GOLD_DW }}"
+            $DW_SERVER = (fab get "$resourcePath" -q properties.connectionString).Trim()
+            $DW_NAME = "${{ env.GOLD_DW }}"
             $ENTRA_CLIENT_ID = "${{ secrets.ACTION_SPN_CLIENTID }}"
             $ENTRA_CLIENT_SECRET = "${{ secrets.ACTION_SPN_SECRET }}"
 
-            Write-Output "::add-mask::$ENTRA_CLIENT_ID"
-            Write-Output "::add-mask::$ENTRA_CLIENT_SECRET"
-            $env:GOLD_DW_CONNECTION_STRING = "Server=$env:DW_SERVER;Initial Catalog=$env:DW_NAME;Authentication=Microsoft Entra Service Principal;User ID=$ENTRA_CLIENT_ID;Password=$ENTRA_CLIENT_SECRET;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+            $GOLD_DW_CONNECTION_STRING = "Server=$DW_SERVER;Initial Catalog=$DW_NAME;Authentication=Microsoft Entra Service Principal;User ID=$ENTRA_CLIENT_ID;Password=$ENTRA_CLIENT_SECRET;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+
+            echo "DW_SERVER=$DW_SERVER" >> $GITHUB_ENV
+            echo "DW_NAME=$DW_NAME" >> $GITHUB_ENV
+            echo "GOLD_DW_CONNECTION_STRING=$GOLD_DW_CONNECTION_STRING" >> $GITHUB_ENV
+
+            echo "DW_SERVER=$DW_SERVER"
+            echo "DW_NAME=$DW_NAME"
+            echo "GOLD_DW_CONNECTION_STRING=$GOLD_DW_CONNECTION_STRING"
 
        # Deploy using the dacpac from previous step
-        - name: Deploy ControlDB
+        - name: Deploy Gold DW
           uses: Azure/sql-action@v2.3
           with:
             connection-string: ${{ env.GOLD_DW_CONNECTION_STRING }}
