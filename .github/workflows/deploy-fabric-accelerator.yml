@@ -1118,6 +1118,6 @@ jobs:
         - name: Build Gold DW dacpac
           shell: pwsh
           run: |
-            msbuild "${{ github.workspace }}\elt-framework\ControlDB\ControlDB.sqlproj" `
+            msbuild "${{ github.workspace }}\workspace\warehouse\dw_gold.Warehouse\dw_gold.sqlproj" `
               /p:Configuration=Release `
               /p:Platform="Any CPU"
