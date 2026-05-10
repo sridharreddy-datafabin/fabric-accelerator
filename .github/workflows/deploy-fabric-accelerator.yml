@@ -1101,6 +1101,10 @@ jobs:
   deploy-golddw:
     runs-on: windows-latest
     needs: deploy-fabric-accelerator
+    env:
+      DW_SERVER: null
+      DW_NAME: null
+      GOLD_DW_CONNECTION_STRING: null
     steps: 
       # Checkout code
         - uses: actions/checkout@v6     
@@ -1122,3 +1126,33 @@ jobs:
               /p:Configuration=Release `
               /p:Platform="Any CPU" `
               /p:WarningLevel=0
+
+        # Python Version Pre-Requisites
+        - name: Fabric CLI Python Pre-Requisites
+          uses: actions/setup-python@v4
+          with:
+            python-version: 3.12
+       
+       # Install Fabric CLI 
+        - name: Install Fabric CLI
+          run: python -m pip install ms-fabric-cli
+
+        # Get Gold DW connection string
+        - name: Get Gold DW connection string
+          shell: pwsh
+          run: |
+            $ErrorActionPreference = "Stop"
+
+            fab config set encryption_fallback_enabled true
+            fab auth login -u "${{ secrets.ACTION_SPN_CLIENTID }}" -p "${{ secrets.ACTION_SPN_SECRET }}" --tenant "${{ secrets.TENANT_ID }}"
+
+            $resourcePath = "${{ env.WORKSPACE_NAME }}.Workspace/${{ env.GOLD_DW }}.Warehouse"
+            $env.DW_SERVER = (fab get "$resourcePath" -q properties.connectionString).Trim()
+            $env.DW_NAME = "${{ env.GOLD_DW }}"
+            $ENTRA_CLIENT_ID = "${{ secrets.ACTION_SPN_CLIENTID }}"
+            $ENTRA_CLIENT_SECRET = "${{ secrets.ACTION_SPN_SECRET }}"
+
+            Write-Output "::add-mask::$ENTRA_CLIENT_ID"
+            Write-Output "::add-mask::$ENTRA_CLIENT_SECRET"
+            $GOLD_DW_CONNECTION_STRING = "Server=$env.DW_SERVER;Initial Catalog=$env.DW_NAME;Authentication=Microsoft Entra Service Principal;User ID=$ENTRA_CLIENT_ID;Password=$ENTRA_CLIENT_SECRET;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+            echo "GOLD_DW_CONNECTION_STRING=$GOLD_DW_CONNECTION_STRING" >> $GITHUB_ENV
