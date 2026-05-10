@@ -1139,6 +1139,7 @@ jobs:
 
         # Get Gold DW connection string
         - name: Get Gold DW connection string
+          id: get_golddw_connection_string
           shell: pwsh
           run: |
             fab config set encryption_fallback_enabled true
@@ -1152,19 +1153,25 @@ jobs:
 
             $GOLD_DW_CONNECTION_STRING = "Server=$DW_SERVER;Initial Catalog=$DW_NAME;Authentication=Microsoft Entra Service Principal;User ID=$ENTRA_CLIENT_ID;Password=$ENTRA_CLIENT_SECRET;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 
-            echo "DW_SERVER=$DW_SERVER" >> $GITHUB_ENV
-            echo "DW_NAME=$DW_NAME" >> $GITHUB_ENV
-            echo "GOLD_DW_CONNECTION_STRING=$GOLD_DW_CONNECTION_STRING" >> $GITHUB_ENV
-
-            echo "DW_SERVER=$DW_SERVER"
-            echo "DW_NAME=$DW_NAME"
-            echo "GOLD_DW_CONNECTION_STRING=$GOLD_DW_CONNECTION_STRING"
+            "DW_SERVER=$DW_SERVER" >> $env:GITHUB_ENV
+            "DW_NAME=$DW_NAME" >> $env:GITHUB_ENV
+            "GOLD_DW_CONNECTION_STRING=$GOLD_DW_CONNECTION_STRING" >> $env:GITHUB_ENV
+            "gold_dw_connection_string=$GOLD_DW_CONNECTION_STRING" >> $env:GITHUB_OUTPUT
 
        # Deploy using the dacpac from previous step
+        - name: Validate Gold DW connection string output
+          shell: pwsh
+          run: |
+            $cs = "${{ steps.get_golddw_connection_string.outputs.gold_dw_connection_string }}"
+            if ([string]::IsNullOrWhiteSpace($cs)) {
+              throw "gold_dw_connection_string output is empty"
+            }
+            echo "Gold DW connection string output is present"
+
         - name: Deploy Gold DW
           uses: Azure/sql-action@v2.3
           with:
-            connection-string: ${{ env.GOLD_DW_CONNECTION_STRING }}
+            connection-string: ${{ steps.get_golddw_connection_string.outputs.gold_dw_connection_string }}
             path: ${{ github.workspace }}\workspace\warehouse\dw_gold.Warehouse\bin\Release\dw_gold.dacpac
             action: Publish
 
