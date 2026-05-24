@@ -1095,10 +1095,11 @@ jobs:
               response=$(fab api -X post "workspaces/$NEW_FABRIC_WORKSPACE_ID/eventStreams/$EventStreamId/updateDefinition?updateMetadata=True" -i "$jsonPayload" --show_headers)
             fi
             echo "$response"
-            
+
       # Logout
         - name: Fabric Logout
           run: fab auth logout
+          
   deploy-golddw:
     runs-on: windows-latest
     needs: deploy-fabric-accelerator
