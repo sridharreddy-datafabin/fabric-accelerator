@@ -177,7 +177,7 @@ jobs:
               fab create .connections/"${WORKSPACE_NAME}-${FABRIC_SQL_DB_NAME}".Connection \
                 -P connectionDetails.creationMethod=SQL,connectionDetails.type=SQL,connectionDetails.parameters.server=$server,connectionDetails.parameters.database=$database,credentialDetails.type=ServicePrincipal,credentialDetails.servicePrincipalClientId=${{ secrets.ACTION_SPN_CLIENTID }},credentialDetails.servicePrincipalSecret=${{ secrets.ACTION_SPN_SECRET }},credentialDetails.tenantid=${{ secrets.TENANT_ID }} 
 
-
+              connectionID=$(fab get .connections/"${WORKSPACE_NAME}-${FABRIC_SQL_DB_NAME}".Connection -q id | tr -d '\r')
                adminRoleJson=$(jq -n \
               --arg id "$WORKSPACE_ADMIN_ID" \
               --arg type "${WORKSPACE_ADMIN_TYPE^}" \
@@ -254,6 +254,7 @@ jobs:
               fab create .connections/"${WORKSPACE_NAME}-WWI-mirror".Connection \
                 -P connectionDetails.creationMethod=SQL,connectionDetails.type=SQL,connectionDetails.parameters.server=$server,connectionDetails.parameters.database=$database,credentialDetails.type=ServicePrincipal,credentialDetails.servicePrincipalClientId=${{ secrets.ACTION_SPN_CLIENTID }},credentialDetails.servicePrincipalSecret=${{ secrets.ACTION_SPN_SECRET }},credentialDetails.tenantid=${{ secrets.TENANT_ID }} 
 
+              connectionID=$(fab get .connections/"${WORKSPACE_NAME}-WWI-mirror".Connection -q id | tr -d '\r')
               adminRoleJson=$(jq -n \
               --arg id "$WORKSPACE_ADMIN_ID" \
               --arg type "${WORKSPACE_ADMIN_TYPE^}" \
