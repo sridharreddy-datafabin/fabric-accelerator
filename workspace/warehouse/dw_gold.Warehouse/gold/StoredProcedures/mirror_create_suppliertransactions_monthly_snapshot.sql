@@ -41,10 +41,8 @@ BEGIN
         SUM(spt.[AmountExcludingTax]) AS [POAmount],
         SUM(spt.[TaxAmount]) AS [TaxAmount],
         COUNT(1) AS [POCount]
-    FROM
-    FROM
-        [lh_silver].[dbo].[silver_mirror_purchasing_suppliertransactions] spt
-        INNER JOIN [lh_silver].[dbo].[silver_application_transactiontypes] tt
+    FROM [lh_silver].[dbo].[silver_mirror_purchasing_suppliertransactions] spt
+        INNER JOIN [lh_silver].[dbo].[silver_application_transactiontypes] tt
             ON tt.[TransactionTypeID] = spt.[TransactionTypeID]
     GROUP BY
         spt.[SupplierID],
