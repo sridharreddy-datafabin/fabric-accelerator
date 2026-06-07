@@ -352,10 +352,14 @@ jobs:
               grep --null -rl "$OLD_WWI_MIRROR_DB_CONNECTION_ID" "${GITHUB_WORKSPACE}/workspace" | tr '\0' '\n'
               grep --null -rl $OLD_WWI_MIRROR_DB_CONNECTION_ID ${GITHUB_WORKSPACE}/workspace | xargs -0 sed -i "s/$OLD_WWI_MIRROR_DB_CONNECTION_ID/$NEW_WWI_MIRROR_DB_CONNECTION_ID/g"
 
-
               echo "Files to be updated with new Tenant ID"
               grep --null -rl "$OLD_TENANT_ID" "${GITHUB_WORKSPACE}/workspace" | tr '\0' '\n'
               grep --null -rl $OLD_TENANT_ID ${GITHUB_WORKSPACE}/workspace | xargs -0 sed -i "s/$OLD_TENANT_ID/${{ secrets.TENANT_ID }}/g"
+
+              echo "ipynb Files to be updated to $SILVER_LH"
+              grep --null -rl "lh_silver" "${GITHUB_WORKSPACE}/workspace" | tr '\0' '\n'
+              grep --null -rl "lh_silver" ${GITHUB_WORKSPACE}/workspace | xargs -0 sed -i "s/lh_silver/$SILVER_LH/g"
+
 
               echo "Replacing OLD ID with NEW ID in ipynb files"
 
