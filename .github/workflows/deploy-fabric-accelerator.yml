@@ -6,7 +6,7 @@ env:
   FABRIC_CAPACITY_SKU: FTL4
   FABRIC_CAPACITY_ADMIN_ID: acc926ed-5b1d-4607-8835-1c77e1c8b8b8
   RESOURCE_GROUP: rg-fabric-project
-  WORKSPACE_NAME: Fabric-Metadata-Accelerator
+  WORKSPACE_NAME: Fabric-Metadata-Accelerator-01
   WORKSPACE_ADMIN_ID: 41f90a36-7e1f-472a-ba3f-85413b5c4771
   WORKSPACE_ADMIN_TYPE: user # valid values: user, group
   FABRIC_SQL_DB_NAME: controldb-fabric-accelerator
